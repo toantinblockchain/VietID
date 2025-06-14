@@ -35,13 +35,13 @@ class P2PNode:
     async def connect_to_peer(self, host, current_node_id):
         uri = f"wss://{host}/ws/{current_node_id}"
         try:
-        websocket = await websockets.connect(uri, ssl=self.ssl_context_client)
-        await websocket.send(current_node_id)
-        peer_id = await websocket.recv()
-        self.peers[peer_id] = websocket
-        print(f"[P2P] ✅ Đã kết nối đến {uri} (Peer: {peer_id})")
+            websocket = await websockets.connect(uri, ssl=self.ssl_context_client)
+            await websocket.send(current_node_id)
+            peer_id = await websocket.recv()
+            self.peers[peer_id] = websocket
+            print(f"[P2P] ✅ Đã kết nối đến {uri} (Peer: {peer_id})")
         except Exception as e:
-        print(f"[P2P] ❌ Kết nối đến {uri} thất bại: {e}")
+            print(f"[P2P] ❌ Kết nối đến {uri} thất bại: {e}")
 
 
     async def handle_peer(self, websocket, path):
