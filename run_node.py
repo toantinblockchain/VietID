@@ -180,8 +180,8 @@ async def main():
     peer_nodes = os.environ.get("PEER_NODES", "").split(",")
     for peer in peer_nodes:
         try:
-            peer_id, peer_host, peer_port = peer.split(":")
-            asyncio.create_task(node.connect_to_peer(peer_host, int(peer_port), node_id))
+            peer_id, peer_host = peer.split(":")
+            asyncio.create_task(node.connect_to_peer(peer_host.strip(), node_id))
         except Exception as e:
             print(f"[P2P] ❌ Lỗi PEER_NODES parse: {peer} → {e}")
 
