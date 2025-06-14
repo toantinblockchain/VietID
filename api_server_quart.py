@@ -329,10 +329,12 @@ def initialize_quart_globals(blockchain_instance, p2p_instance, wallet_instance)
     wallet = wallet_instance
 
 def run_api(blockchain_instance, p2p_instance, wallet_instance):
+    # Chỉ gán các biến toàn cục – KHÔNG khởi chạy app
     global blockchain, p2p_node, wallet
     blockchain = blockchain_instance
     p2p_node = p2p_instance
     wallet = wallet_instance
+
 
     import threading
     import asyncio
