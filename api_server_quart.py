@@ -320,6 +320,14 @@ async def ws(peer_id):
         print(f"[WS] ❌ Lỗi với {their_id}: {e}")
         if their_id in p2p_node.peers:
             del p2p_node.peers[their_id]
+            
+# Dùng để khởi tạo biến toàn cục từ run_node.py
+def initialize_quart_globals(blockchain_instance, p2p_instance, wallet_instance):
+    global blockchain, p2p_node, wallet
+    blockchain = blockchain_instance
+    p2p_node = p2p_instance
+    wallet = wallet_instance
+
 def run_api(blockchain_instance, p2p_instance, wallet_instance):
     global blockchain, p2p_node, wallet
     blockchain = blockchain_instance
