@@ -307,9 +307,9 @@ def get_chain():
 
 @app.websocket('/ws/<peer_id>')
 async def ws(peer_id):
-    await websocket.send(p2p_node.node_id)  # gửi ID của node hiện tại
+    await websocket.send(p2p_node.node_id)
     their_id = await websocket.receive()
-    p2p_node.peers[their_id] = websocket._get_current_object()  # lưu peer
+    p2p_node.peers[their_id] = websocket._get_current_object()
     print(f"[WS] ✅ WebSocket kết nối từ {their_id}")
 
     try:
