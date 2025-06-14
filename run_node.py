@@ -187,18 +187,17 @@ if __name__ == "__main__":
             except Exception as e:
                 print(f"[P2P] ❌ Lỗi PEER_NODES parse: {peer} → {e}")
 
-        # Khởi tạo global biến cho Quart app (để WebSocket truy cập được p2p_node, blockchain, wallet)
+        # Khởi tạo biến toàn cục cho Quart app (để WebSocket truy cập được)
         initialize_quart_globals(blockchain, node, sender_wallet)
 
-        # Chạy Quart app
+        # Đường dẫn chứng chỉ TLS
         cert_path = os.path.join(os.getcwd(), f"node_data_{node_id}", f"{node_id}.pem")
         key_path = os.path.join(os.getcwd(), f"node_data_{node_id}", f"{node_id}_key.pem")
 
-        initialize_quart_globals(blockchain, node, sender_wallet)
-
+        # Khởi chạy Web server chính trên port 5000 (duy nhất Render nhận)
         await app.run_task(
             host="0.0.0.0",
-            port=int(os.environ.get("PORT", 5000)),
+            port=api_port,
             certfile=cert_path,
             keyfile=key_path
         )
