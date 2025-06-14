@@ -175,7 +175,7 @@ if __name__ == "__main__":
         node.consensus = consensus
 
         node.message_processor_task = asyncio.create_task(node._process_message_queue())
-        asyncio.create_task(node.run_server())
+        #asyncio.create_task(node.run_server())
         asyncio.create_task(consensus.run_consensus_loop())
 
         # Kết nối tới PEERS
