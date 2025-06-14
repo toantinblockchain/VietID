@@ -304,23 +304,32 @@ def get_chain():
     return jsonify([block.to_dict() for block in blockchain.chain])
 
 
-def run_api(node_instance, p2p_instance, wallet_instance):
-    global blockchain, p2p_node, wallet
-    blockchain = node_instance
-    p2p_node = p2p_instance
-    wallet = wallet_instance
+import websockets
+import threading
 
-    # Giảm log chi tiết của Flask
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+@app.before_first_request
+def start_websocket_server():
+    async def websocket_handler(websocket, path):
+        if not path.startswith("/ws/"):
+            await websocket.close()
+            return
+        peer_id = path.split("/")[-1]
+        await p2p_node.handle_peer(websocket, path=f"/ws/{peer_id}")
 
-    os.environ['FLASK_ENV'] = 'production'
+def run_ws():
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    loop = asyncio.get_event_loop()
+    server = websockets.serve(
+        websocket_handler,
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        ssl=p2p_node.ssl_context_server
+    )
+    loop.run_until_complete(server)
+    loop.run_forever()
 
-    # 👇 Lấy PORT từ biến môi trường (do Render chỉ định)
-    port = int(os.environ.get("PORT", 5000))
+threading.Thread(target=run_ws, daemon=True).start()
 
-    print(f"[API] 🚀 Flask server starting at 0.0.0.0:{port}")
-    app.run(host="0.0.0.0", port=port, debug=False)
 
 
 
