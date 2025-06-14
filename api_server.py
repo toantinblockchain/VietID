@@ -1,9 +1,10 @@
 from vietid17 import Transaction, Wallet, hash_message, schnorr_sign
-from flask import Flask, jsonify, request, send_file
+#from flask import Flask, jsonify, request, send_file
+from quart import Quart, request, jsonify, websocket, send_file
 from datetime import datetime, timezone
 import logging, os, json, asyncio, traceback
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 # Biến toàn cục
 blockchain = None
@@ -304,41 +305,18 @@ def get_chain():
     return jsonify([block.to_dict() for block in blockchain.chain])
 
 
-def run_api(node_instance, p2p_instance, wallet_instance):
-    global blockchain, p2p_node, wallet
-    blockchain = node_instance
-    p2p_node = p2p_instance
-    wallet = wallet_instance
+@app.websocket('/ws/<peer_id>')
+async def ws(peer_id):
+    await websocket.send(p2p_node.node_id)  # gửi ID của node hiện tại
+    their_id = await websocket.receive()
+    p2p_node.peers[their_id] = websocket._get_current_object()  # lưu peer
+    print(f"[WS] ✅ WebSocket kết nối từ {their_id}")
 
-import websockets
-
-def start_websocket_server():
-    async def websocket_handler(websocket, path):
-        if not path.startswith("/ws/"):
-            await websocket.close()
-            return
-        peer_id = path.split("/")[-1]
-        await p2p_node.handle_peer(websocket, path)
-
-async def run_ws_server():
-    server = await websockets.serve(
-        websocket_handler,
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000)),
-        ssl=p2p_node.ssl_context_server
-    )
-    print("[WebSocket] 🚀 Đã khởi chạy WebSocket server")
-    await server.wait_closed()
-
-import threading
-def run_in_thread():
-    asyncio.set_event_loop(asyncio.new_event_loop())
-    asyncio.get_event_loop().run_until_complete(run_ws_server())
-    threading.Thread(target=run_in_thread, daemon=True).start()
-    start_websocket_server()
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
-    os.environ['FLASK_ENV'] = 'production'
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-    
+    try:
+        while True:
+            msg = await websocket.receive()
+            await p2p_node.message_queue.put((their_id, msg))
+    except Exception as e:
+        print(f"[WS] ❌ Lỗi với {their_id}: {e}")
+        if their_id in p2p_node.peers:
+            del p2p_node.peers[their_id]
