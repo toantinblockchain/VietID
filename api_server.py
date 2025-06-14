@@ -304,36 +304,41 @@ def get_chain():
     return jsonify([block.to_dict() for block in blockchain.chain])
 
 
-import websockets
-import threading
+def run_api(node_instance, p2p_instance, wallet_instance):
+    global blockchain, p2p_node, wallet
+    blockchain = node_instance
+    p2p_node = p2p_instance
+    wallet = wallet_instance
 
-@app.before_first_request
+import websockets
+
 def start_websocket_server():
     async def websocket_handler(websocket, path):
         if not path.startswith("/ws/"):
             await websocket.close()
             return
         peer_id = path.split("/")[-1]
-        await p2p_node.handle_peer(websocket, path=f"/ws/{peer_id}")
+        await p2p_node.handle_peer(websocket, path)
 
-def run_ws():
-    asyncio.set_event_loop(asyncio.new_event_loop())
-    loop = asyncio.get_event_loop()
-    server = websockets.serve(
+async def run_ws_server():
+    server = await websockets.serve(
         websocket_handler,
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000)),
         ssl=p2p_node.ssl_context_server
     )
-    loop.run_until_complete(server)
-    loop.run_forever()
+    print("[WebSocket] 🚀 Đã khởi chạy WebSocket server")
+    await server.wait_closed()
 
-threading.Thread(target=run_ws, daemon=True).start()
+import threading
+def run_in_thread():
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    asyncio.get_event_loop().run_until_complete(run_ws_server())
+    threading.Thread(target=run_in_thread, daemon=True).start()
+    start_websocket_server()
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+    os.environ['FLASK_ENV'] = 'production'
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
-
-
-
-
-
-    
     
