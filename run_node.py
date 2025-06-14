@@ -194,6 +194,7 @@ if __name__ == "__main__":
         cert_path = os.path.join(os.getcwd(), f"node_data_{node_id}", f"{node_id}.pem")
         key_path = os.path.join(os.getcwd(), f"node_data_{node_id}", f"{node_id}_key.pem")
 
+        initialize_quart_globals(blockchain, node, sender_wallet)
         await app.run_task(host="0.0.0.0", port=api_port, certfile=cert_path, keyfile=key_path)
 
     asyncio.run(main())
