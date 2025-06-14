@@ -12,7 +12,7 @@ p2p_node = None
 wallet = None
 
 @app.route("/cert/<node_id>", methods=["GET"])
-def get_certificate(node_id):
+async def get_certificate(node_id):
     cert_path = os.path.join(os.getcwd(), f"node_data_{node_id}", f"{node_id}.pem")
     if os.path.exists(cert_path):
         return send_file(cert_path, mimetype="application/x-pem-file")
@@ -20,7 +20,7 @@ def get_certificate(node_id):
 
 
 @app.route('/status', methods=['GET'])
-def status():
+async def status():
     return jsonify({
         "node_id": blockchain.node_id,
         "shard_id": blockchain.shard_id,
@@ -29,17 +29,17 @@ def status():
     })
 
 @app.route('/block/latest', methods=['GET'])
-def get_latest_block():
+async def get_latest_block():
     latest = blockchain.get_latest_block()
     return jsonify(latest.to_dict())
 
 @app.route('/blocks/recent/<int:count>', methods=['GET'])
-def get_recent_blocks(count):
+async def get_recent_blocks(count):
     recent = blockchain.chain[-count:]
     return jsonify([block.to_dict() for block in reversed(recent)])
 
 @app.route('/block/<identifier>', methods=['GET'])
-def get_block_by_identifier(identifier):
+async def get_block_by_identifier(identifier):
     for block in blockchain.chain:
         # So sánh cả dạng int và string
         if block.hash == identifier:
@@ -53,23 +53,23 @@ def get_block_by_identifier(identifier):
 
 
 @app.route('/balance/<address>', methods=['GET'])
-def get_balance(address):
+async def get_balance(address):
     balance = blockchain.state_db.get_balance(address)
     return jsonify({"address": address, "balance": balance})
 
 @app.route('/did/list', methods=['GET'])
-def get_did_list():
+async def get_did_list():
     return jsonify(blockchain.state_db.did_registry)
 
 @app.route('/did/<did>', methods=['GET'])
-def get_did_info(did):
+async def get_did_info(did):
     data = blockchain.state_db.did_registry.get(did)
     if data:
         return jsonify(data)
     return jsonify({"error": "DID not found"}), 404
 
 @app.route('/mempool', methods=['GET'])
-def get_mempool():
+async def get_mempool():
     mempool_data = []
     for tx in blockchain.mempool:
         if hasattr(tx, 'to_dict'):
@@ -85,7 +85,7 @@ def get_mempool():
 
 
 @app.route('/tx/<txid>', methods=['GET'])
-def get_transaction_by_txid(txid):
+async def get_transaction_by_txid(txid):
     for block in blockchain.chain:
         for tx in block.transactions:
             if tx.txid == txid:
@@ -93,7 +93,7 @@ def get_transaction_by_txid(txid):
     return jsonify({"error": "Transaction not found"}), 404
 
 @app.route('/governance/proposals', methods=['GET'])
-def get_governance_proposals():
+async def get_governance_proposals():
     # Chuyển tất cả set thành list để JSON hóa
     safe_data = {
         k: {kk: list(vv) if isinstance(vv, set) else vv for kk, vv in v.items()}
@@ -102,7 +102,7 @@ def get_governance_proposals():
     return jsonify(safe_data)
 
 @app.route('/governance/proposal/<proposal_id>', methods=['GET'])
-def get_governance_proposal(proposal_id):
+async def get_governance_proposal(proposal_id):
     proposal = blockchain.state_db.governance_proposals.get(proposal_id)
     if proposal:
         # Convert the 'voters' set to a list before jsonify-ing
@@ -116,7 +116,7 @@ def get_governance_proposal(proposal_id):
 # In api_server.py, find the get_governance_votes route:
 
 @app.route('/governance/votes/<proposal_id>', methods=['GET'])
-def get_governance_votes(proposal_id):
+async def get_governance_votes(proposal_id):
     proposal = blockchain.state_db.governance_proposals.get(proposal_id)
     if proposal:
         # Correctly access votes_for and votes_against directly
@@ -128,7 +128,7 @@ def get_governance_votes(proposal_id):
     return jsonify({"error": f"proposal_id {proposal_id} not found"}), 404
 
 @app.route('/tx/send', methods=['POST'])
-def send_transaction():
+async def send_transaction():
     try:
         data = request.json
         recipient = data["recipient"]
@@ -157,7 +157,7 @@ def send_transaction():
 
 
 @app.route('/tx/send/<tx_type>', methods=['POST'])
-def send_special_tx(tx_type):
+async def send_special_tx(tx_type):
     try:
         data = request.json
         tx = None
@@ -240,7 +240,7 @@ def send_special_tx(tx_type):
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/tx/send/CROSS_TRANSFER', methods=['POST'])
-def send_cross_transfer():
+async def send_cross_transfer():
     try:
 
         data = request.json
@@ -289,7 +289,7 @@ def send_cross_transfer():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/", methods=["GET"])
-def index():
+async def index():
     return {
         "message": "VietID node is running!",
         "node_id": blockchain.node_id,
@@ -297,11 +297,11 @@ def index():
         "address": wallet.address
     }
 @app.route("/health", methods=["GET"])
-def health():
+async def health():
     return jsonify({"status": "ok"}), 200
 
 @app.route("/chain", methods=["GET"])
-def get_chain():
+async def get_chain():
     return jsonify([block.to_dict() for block in blockchain.chain])
 
 
