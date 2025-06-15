@@ -15,7 +15,7 @@ wallet = None
 async def get_certificate(node_id):
     cert_path = os.path.join(os.getcwd(), f"node_data_{node_id}", f"{node_id}.pem")
     if os.path.exists(cert_path):
-        return send_file(cert_path, mimetype="application/x-pem-file")
+        return await send_file(cert_path, mimetype="application/x-pem-file")
     return jsonify({"error": "Certificate not found"}), 404
 
 
