@@ -130,7 +130,8 @@ async def get_governance_votes(proposal_id):
 @app.route('/tx/send', methods=['POST'])
 async def send_transaction():
     try:
-        data = request.json
+        data = await request.get_json()
+
         recipient = data["recipient"]
         amount = int(data["amount"])
 
@@ -159,7 +160,7 @@ async def send_transaction():
 @app.route('/tx/send/<tx_type>', methods=['POST'])
 async def send_special_tx(tx_type):
     try:
-        data = request.json
+        data = await request.get_json()
         tx = None
 
         if tx_type == "DID":
@@ -243,7 +244,8 @@ async def send_special_tx(tx_type):
 async def send_cross_transfer():
     try:
 
-        data = request.json
+        data = await request.get_json()
+
         print(f"[DEBUG] Nhận CROSS_TRANSFER: from {data.get('from_shard')} → {data.get('to_shard')}")
         from_shard = data["from_shard"]
         to_shard = data["to_shard"]
