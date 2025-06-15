@@ -146,10 +146,11 @@ async def send_transaction():
         tx.signature = schnorr_sign(wallet.private_key_ecc, tx_hash)
 
         if blockchain.add_transaction_to_mempool(tx):
-            asyncio.run(p2p_node.broadcast_message({
+            await p2p_node.broadcast_message({
                 "type": "TRANSACTION",
                 "transaction": tx.to_dict()
-            }))
+            })
+
             return jsonify({"status": "success", "txid": tx.txid})
         else:
             return jsonify({"status": "failed", "reason": "Invalid or duplicate transaction"}), 400
@@ -226,10 +227,10 @@ async def send_special_tx(tx_type):
         tx.signature = schnorr_sign(wallet.private_key_ecc, hash_message(tx.to_string_for_signing().encode()))
         
         if blockchain.add_transaction_to_mempool(tx):
-            asyncio.run(p2p_node.broadcast_message({
+            await p2p_node.broadcast_message({
                 "type": "TRANSACTION",
                 "transaction": tx.to_dict()
-            }))
+            })
             return jsonify({"status": "success", "txid": tx.txid})
         
         else:
@@ -277,10 +278,10 @@ async def send_cross_transfer():
 
         # Thêm vào mempool và broadcast nếu hợp lệ
         if blockchain.add_transaction_to_mempool(tx):
-            asyncio.run(p2p_node.broadcast_message({
+            await p2p_node.broadcast_message({
                 "type": "TRANSACTION",
                 "transaction": tx.to_dict()
-            }))
+            })
             return jsonify({"status": "success", "txid": tx.txid})
         else:
             return jsonify({"status": "failed", "reason": "Transaction invalid or exists"}), 400
