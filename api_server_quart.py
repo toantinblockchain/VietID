@@ -328,26 +328,3 @@ def initialize_quart_globals(blockchain_instance, p2p_instance, wallet_instance)
     p2p_node = p2p_instance
     wallet = wallet_instance
 
-def run_api(blockchain_instance, p2p_instance, wallet_instance):
-    # Chỉ gán các biến toàn cục – KHÔNG khởi chạy app
-    global blockchain, p2p_node, wallet
-    blockchain = blockchain_instance
-    p2p_node = p2p_instance
-    wallet = wallet_instance
-
-
-    import threading
-    import asyncio
-    
-    def start_api():
-        asyncio.set_event_loop(asyncio.new_event_loop())
-        app.run(
-            host="0.0.0.0",
-            port=int(os.environ.get("PORT", 5000)),
-            ssl={
-                "certfile": os.path.join(os.getcwd(), f"node_data_{p2p_node.node_id}", f"{p2p_node.node_id}.pem"),
-                "keyfile": os.path.join(os.getcwd(), f"node_data_{p2p_node.node_id}", f"{p2p_node.node_id}_key.pem")
-            }
-        )
-    
-    threading.Thread(target=start_api, daemon=True).start()
