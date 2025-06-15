@@ -198,8 +198,8 @@ if __name__ == "__main__":
         await app.run_task(
             host="0.0.0.0",
             port=api_port,
-            certfile=cert_path,
-            keyfile=key_path
+            #certfile=cert_path,
+            #keyfile=key_path
         )
 
 
