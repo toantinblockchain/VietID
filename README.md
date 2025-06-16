@@ -51,12 +51,12 @@ curl http://localhost:5000/balance/<address>
 
 ## 📦 Cấu trúc thư mục
 ```
-├── vietid17.py          # Lõi blockchain
-├── p2p_node.py         # Giao tiếp P2P
-├── api_server.py       # API REST Flask
-├── run_nodeX.py        # File khởi chạy node cụ thể
-├── requirements.txt    # Danh sách thư viện
-└── README.md           # Tài liệu này
+├── vietid17.py               # Lõi blockchain
+├── p2p_node.py               # Giao tiếp P2P
+├── api_server_quart.py       # API REST Flask
+├── run_nodeX.py              # File khởi chạy node cụ thể
+├── requirements.txt          # Danh sách thư viện
+└── README.md                 # Tài liệu này
 ```
 
 ## 📡 Danh sách API REST
