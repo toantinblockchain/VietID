@@ -60,8 +60,8 @@ curl http://localhost:5000/balance/<address>
 ```
 
 ## 📡 Danh sách API REST
-| Method | Endpoint                              | Mô tả |
-|--------|----------------------------------------|------|
+| Method | Endpoint                               |                   Mô tả                       |
+|--------|----------------------------------------|-----------------------------------------------|
 | GET    | `/status`                             | Trạng thái node và blockchain |
 | GET    | `/block/latest`                       | Block mới nhất |
 | GET    | `/blocks/recent/<count>`              | Lấy `count` block gần nhất |
@@ -73,10 +73,12 @@ curl http://localhost:5000/balance/<address>
 | GET    | `/tx/<txid>`                          | Truy vấn thông tin giao dịch cụ thể |
 | GET    | `/governance/proposals`               | Danh sách đề xuất đang được bỏ phiếu |
 | GET    | `/governance/votes/<proposal_id>`     | Chi tiết kết quả bỏ phiếu |
-| POST   | `/tx/send`                            | Gửi giao dịch `TRANSFER` |
-| POST   | `/tx/send/DID`                        | Gửi giao dịch `DID_REGISTER` |
-| POST   | `/tx/send/VOTE`                       | Gửi giao dịch `VOTE` |
-| POST   | `/tx/send/MINT`                       | Gửi giao dịch `MINT` token |
+| POST   | `/tx/send`                            | Gửi giao dịch chuyển tiền `TRANSFER` |
+| POST   | `/tx/send/DID`                        | Gửi giao dịch đăng ký định danh `DID_REGISTER` |
+| POST   | `/tx/send/PROPOSE`                    | Gửi giao dịch tạo đề xuất `PROPOSE` |
+| POST   | `/tx/send/VOTE`                       | Gửi giao dịch bỏ phiếu đề xuất `VOTE` |
+| POST   | `/tx/send/MINT`                       | Gửi giao dịch nạp token `MINT` |
+| POST   | `/tx/send/CROSS_TRANSFER`             | Gửi giao dịch liên Shard CROSS_TRANSFER |
 
 ## 📥 Mẫu gửi giao dịch bằng curl
 
