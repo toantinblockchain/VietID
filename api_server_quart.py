@@ -164,7 +164,8 @@ async def send_transaction():
 
         tx = Transaction(
             sender_public_key_bytes=wallet.public_key_raw_bytes,
-            recipient_public_key_bytes=bytes.fromhex(recipient),
+            #recipient_public_key_bytes=bytes.fromhex(recipient),
+            recipient_public_key_bytes=recipient_public_key_bytes,
             amount=amount,
             tx_type="TRANSFER",
             data=""
