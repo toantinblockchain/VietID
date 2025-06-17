@@ -126,7 +126,7 @@ async def get_governance_proposal(proposal_id):
     return jsonify({"error": f"proposal_id {proposal_id} not found"}), 404
 
 # In api_server.py, find the get_governance_votes route:
-
+'''
 @app.route('/governance/votes/<proposal_id>', methods=['GET'])
 async def get_governance_votes(proposal_id):
     proposal = blockchain.state_db.governance_proposals.get(proposal_id)
@@ -138,7 +138,20 @@ async def get_governance_votes(proposal_id):
             "votes_against": proposal.get("votes_against", 0) # <--- CHANGE THIS LINE
         })
     return jsonify({"error": f"proposal_id {proposal_id} not found"}), 404
-
+'''
+@app.route('/governance/votes/<proposal_id>', methods=['GET'])
+def get_governance_votes(proposal_id):
+    proposal = blockchain.state_db.governance_proposals.get(proposal_id)
+    if proposal:
+        return jsonify({
+            "proposal_id": proposal_id,
+            "votes_for": proposal.get("votes", {}).get("YES", 0),
+            "votes_against": proposal.get("votes", {}).get("NO", 0),
+            "finalized": proposal.get("finalized"),
+            "result": proposal.get("result")
+        })
+    return jsonify({"error": f"proposal_id {proposal_id} not found"}), 404
+    
 @app.route('/tx/send', methods=['POST'])
 async def send_transaction():
     try:
