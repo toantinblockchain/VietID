@@ -248,17 +248,23 @@ async def send_special_tx(tx_type):
         elif tx_type == "PROPOSE":
             proposal_id = data["proposal_id"]
             description = data["description"]
-            title = data.get("title", "")  # lấy nếu có
+            title = data.get("title", "")
+            action = data.get("action")
+            mint_target = data.get("mint_target")
+            amount = data.get("amount")
+
             tx = Transaction(
                 sender_public_key_bytes=wallet.public_key_raw_bytes,
-                recipient_public_key_bytes=b"",  # để trống nếu không cần nhận
+                recipient_public_key_bytes=b"",
                 amount=0,
-                #tx_type="PROPOSE",
                 tx_type="GOVERNANCE_PROPOSAL",
                 data=json.dumps({
                     "proposal_id": proposal_id,
                     "title": title,
-                    "description": description
+                    "description": description,
+                    "action": action,
+                    "mint_target": mint_target,
+                    "amount": amount
                 })
             )
 
