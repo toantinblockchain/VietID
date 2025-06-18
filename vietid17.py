@@ -570,20 +570,22 @@ class StateDB:
                 '''
             elif tx.tx_type == "GOVERNANCE_PROPOSAL":
                 try:
+                    print(f"[DEBUG] tx.data = {tx.data}")
                     proposal_data = json.loads(tx.data)
                     proposal_id = proposal_data["proposal_id"]
                     description = proposal_data.get("description", "")
 
-                    self.governance_proposals[proposal_id] = {
-                        "description": description,
-                        "votes": {"YES": 0, "NO": 0},
-                        "voters": set(),
-                        "finalized": False,
-                        "result": None,
-                        "action": proposal_data.get("action"),
-                        "mint_target": proposal_data.get("mint_target"),
-                        "amount": proposal_data.get("amount"),
-                    }
+                    if proposal_id not in self.governance_proposals or not self.governance_proposals[proposal_id]["finalized"]:
+                        self.governance_proposals[proposal_id] = {
+                            "description": description,
+                            "votes": {"YES": 0, "NO": 0},
+                            "voters": set(),
+                            "finalized": False,
+                            "result": None,
+                            "action": proposal_data.get("action"),
+                            "mint_target": proposal_data.get("mint_target"),
+                            "amount": proposal_data.get("amount"),
+                        }
                     print(f"[GOV] 🗳️ Đã tạo đề xuất '{proposal_id}'")
                 except Exception as e:
                     print(f"[GOV] ❌ Lỗi khi xử lý GOVERNANCE_PROPOSAL: {e}")
@@ -612,7 +614,7 @@ class StateDB:
                         return False
 
                     proposal["votes"][vote] += 1
-                    proposal["voters"].add(pubkey_hex)
+                    proposal["voters"].add(pubkey_hex)  # ✅ Đúng với kiểu `set`
                     print(f"[GOV] 🗳️ Vote '{vote}' cho '{proposal_id}' từ {pubkey_hex[:10]}...")
 
                     self.try_finalize_proposal(proposal_id)
@@ -681,18 +683,29 @@ class StateDB:
         yes = proposal["votes"]["YES"]
         no = proposal["votes"]["NO"]
 
+        print(f"[DEBUG] ✅ Đang kiểm tra đề xuất '{proposal_id}' | YES: {yes}, NO: {no}, quorum: {quorum}")
+
         if yes + no >= quorum:
             if yes > no:
                 proposal["result"] = "PASSED"
                 print(f"[GOV] ✅ Đề xuất '{proposal_id}' đã PASSED")
-                # Nếu là đề xuất MINT → thực hiện
+
                 if proposal.get("action") == "MINT":
                     target = proposal.get("mint_target")
-                    amount = proposal.get("amount")
-                    if target and amount:
+                    try:
+                        amount = int(proposal.get("amount", 0))
+                    except Exception as e:
+                        print(f"[GOV] ❌ amount không hợp lệ: {e}")
+                        amount = 0
+
+                    print(f"[DEBUG] Chuẩn bị MINT {amount} token cho {target}")
+                    if target and amount > 0:
                         self.update_balance(target, amount)
                         self.total_supply += amount
+                        proposal["executed"] = True
                         print(f"[TOKEN] 💸 MINT {amount} token cho {target}")
+                    else:
+                        print(f"[GOV] ❌ Thiếu thông tin MINT hoặc amount = 0")
             else:
                 proposal["result"] = "REJECTED"
                 print(f"[GOV] ❌ Đề xuất '{proposal_id}' bị REJECTED")
