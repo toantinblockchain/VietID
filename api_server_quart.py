@@ -162,7 +162,7 @@ def get_governance_votes(proposal_id):
 @app.route('/tx/send/<tx_type>', methods=['POST'])
 def send_special_tx(tx_type):
     try:
-        data = request.json
+        data = await request.get_json()
         tx = None
 
         if tx_type == "DID":
