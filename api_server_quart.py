@@ -160,7 +160,7 @@ def get_governance_votes(proposal_id):
     return Response(json.dumps({"error": f"proposal_id {proposal_id} not found"}, indent=2), mimetype='application/json')
 
 @app.route('/tx/send/<tx_type>', methods=['POST'])
-def send_special_tx(tx_type):
+async def send_special_tx(tx_type):
     try:
         data = await request.get_json()
         tx = None
