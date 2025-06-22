@@ -282,10 +282,10 @@ async def send_special_tx(tx_type):
 
         success, reason = blockchain.add_transaction_to_mempool(tx)
         if success:
-            asyncio.run(p2p_node.broadcast_message({
+            await p2p_node.broadcast_message({
                 "type": "TRANSACTION",
                 "transaction": tx.to_dict()
-            }))
+            })
             return jsonify({"status": "success", "txid": tx.txid})
         else:
             return jsonify({"status": "failed", "reason": reason or "Giao dịch không hợp lệ"}), 400
