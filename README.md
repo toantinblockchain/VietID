@@ -14,7 +14,6 @@ công chứng điện tử và tích hợp các dịch vụ công trong quá tr�
 - 💾 Snapshot trạng thái blockchain dạng nén nhẹ (zlib)
 
 ## 🧩 Kiến trúc hệ thống
-```
 +-----------------------------+
 |     REST API (Flask)       |
 +-----------------------------+
@@ -25,7 +24,6 @@ công chứng điện tử và tích hợp các dịch vụ công trong quá tr�
 +-----------------------------+
 |       StateDB, Snapshot    |
 +-----------------------------+
-```
 
 ## 🛠 Cài đặt
 ### 1. Yêu cầu hệ thống
@@ -34,23 +32,15 @@ công chứng điện tử và tích hợp các dịch vụ công trong quá tr�
 - Flask & Websocket
 
 ### 2. Cài đặt thư viện
-```bash
 pip install -r requirements.txt
-```
 
 ### 3. Khởi tạo Node
-```bash
-python run_node1.py  # hoặc run_node2.py, run_node3.py
-```
-
-### 4. Giao diện API (cổng 5000)
-```bash
-curl http://localhost:5000/status
-curl http://localhost:5000/balance/<address>
-```
+https://vietid-1.onrender.com/
+https://vietid-2.onrender.com/
+https://vietid-1.onrender.com/
 
 ## 📦 Cấu trúc thư mục
-```
+
 ├── vietid17.py               # Lõi blockchain
 ├── p2p_node.py               # Giao tiếp P2P
 ├── api_server_quart.py       # API REST Flask
@@ -81,64 +71,34 @@ curl http://localhost:5000/balance/<address>
 | POST   | `/tx/send/CROSS_TRANSFER`             | Gửi giao dịch liên Shard CROSS_TRANSFER |
 
 ## 📥 Mẫu gửi giao dịch bằng curl
-
-### Giao dịch TRANSFER (chuyển token)
-```bash
-curl -X POST http://localhost:5000/tx/send \
-     -H "Content-Type: application/json" \
-     -d '{
-           "recipient": "<recipient_public_key_hex>",
-           "amount": 100
-         }'
-```
-
 ### Giao dịch DID_REGISTER (đăng ký định danh số)
-```bash
-curl -X POST http://localhost:5000/tx/send/DID \
-     -H "Content-Type: application/json" \
-     -d '{
-           "alias": "Tên hiển thị hoặc biệt danh"
-         }'
-```
+curl -X POST https://vietid-1.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 1\"}"
+curl -X POST https://vietid-2.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 2\"}"
+curl -X POST https://vietid-3.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 3\"}"
 
 ### Giao dịch MINT (phát hành token mới)
-```bash
-curl -X POST http://localhost:5000/tx/send/MINT \
-     -H "Content-Type: application/json" \
-     -d '{
-           "recipient": "<recipient_public_key_hex>",
-           "amount": 1000
-         }'
-```
+curl -X POST https://vietid-1.onrender.com/tx/send/MINT -H "Content-Type: application/json" -d "{\"recipient\": \"<Thay thế address node 1>\",\"amount\": 1000}"
 
-### Giao dịch VOTE (bỏ phiếu)
-```bash
-curl -X POST http://localhost:5000/tx/send/VOTE \
-     -H "Content-Type: application/json" \
-     -d '{
-           "proposal_id": "prop-001",
-           "vote": "YES"
-         }'
-```
+### Giao dịch TRANSFER (chuyển token)
+curl -X POST https://vietid-1.onrender.com/tx/send/TRANSFER -H "Content-Type: application/json" -d "{\"recipient\": \"<Thay thế address node 2>\",\"amount\": 50}"
+
+### Giao dịch liên phân đoạn (Cross-shard)
+curl -X POST https://vietid-1.onrender.com/tx/send/CROSS_TRANSFER -H "Content-Type: application/json" -d "{\"from_shard\": 0, \"to_shard\": 1, \"recipient\": \"<Thay thế address node 2>\", \"amount\": 100}"
 
 ### Giao dịch PROPOSE (đề xuất)
-```bash
-curl -X POST http://localhost:5000/tx/send/PROPOSE \
-     -H "Content-Type: application/json" \
-     -d '{
-           "proposal_id": "prop-002",
-           "title": "Tang gioi han block size",
-           "description": "De xuat tang kich thuoc khoi tu 1MB len 2MB"
-         }'
-```
+curl -X POST https://vietid-1.onrender.com/tx/send/PROPOSE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"title\":\"Mint token node 3\", \"description\": \"This is mint token node 3\", \"action\": \"MINT\", \"mint_target\": \"<Address node 3>\", \"amount\": 1000}"
 
-Lưu ý: - Nếu sử dụng Windows các dấu " của key: value phải được giải phóng bằng dấu \ ở trước phía trước,
-value là chuỗi bằng Tiếng Việt sử dụng không dấu.
-Ví dụ: curl -X POST http://localhost:5000/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Tan\"}"
+### Giao dịch VOTE (bỏ phiếu)
+Node 1 biểu quyết:
+curl -X POST https://vietid-1.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
+Node 2 biểu quyết:
+curl -X POST https://vietid-2.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
+Node 3 biểu quyết:
+curl -X POST https://vietid-3.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 
 ## 🔬 Demo
-- Video demo: [link YouTube hoặc Google Drive nếu có]
-- URL testnet (nếu public): đang xây dựng
+- Video demo: https://drive.google.com/drive/u/0/folders/1kMaqn2UkTp76dhghRWo0mKZDTN1J8URm
+- URL testnet: https://vietid-1.onrender.com/; https://vietid-2.onrender.com/; https://vietid-1.onrender.com/
 
 ## 🔒 License
 MIT License - Mã nguồn mở, sử dụng tự do với điều kiện ghi nhận tác giả.
@@ -153,7 +113,5 @@ MIT License - Mã nguồn mở, sử dụng tự do với điều kiện ghi nh�
 - [Cosmos SDK Docs](https://docs.cosmos.network)
 - [Tendermint Consensus](https://docs.tendermint.com)
 - [RFC 7519 - JWT](https://datatracker.ietf.org/doc/html/rfc7519)
-
----
 
 > Dự án được phát triển trong khuôn khổ cuộc thi Blockchain Layer-1 Việt Nam 2025. Mọi đóng góp, phản hồi và ý tưởng hợp tác đều được chào đón!
