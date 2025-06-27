@@ -14,6 +14,7 @@ công chứng điện tử và tích hợp các dịch vụ công trong quá tr�
 - 💾 Snapshot trạng thái blockchain dạng nén nhẹ (zlib)
 
 ## 🧩 Kiến trúc hệ thống
+```
 +-----------------------------+
 |     REST API (Flask)       |
 +-----------------------------+
@@ -24,7 +25,7 @@ công chứng điện tử và tích hợp các dịch vụ công trong quá tr�
 +-----------------------------+
 |       StateDB, Snapshot    |
 +-----------------------------+
-
+```
 ## 🛠 Cài đặt
 ### 1. Yêu cầu hệ thống
 - Python >= 3.10
@@ -40,7 +41,7 @@ https://vietid-2.onrender.com/
 https://vietid-1.onrender.com/
 
 ## 📦 Cấu trúc thư mục
-
+```
 ├── vietid17.py               # Lõi blockchain
 ├── p2p_node.py               # Giao tiếp P2P
 ├── api_server_quart.py       # API REST Flask
