@@ -36,10 +36,11 @@ công chứng điện tử và tích hợp các dịch vụ công trong quá tr�
 pip install -r requirements.txt
 
 ### 3. Khởi tạo Node
+```
 https://vietid-1.onrender.com/
 https://vietid-2.onrender.com/
 https://vietid-1.onrender.com/
-
+```
 ## 📦 Cấu trúc thư mục
 ```
 ├── vietid17.py               # Lõi blockchain
@@ -51,6 +52,7 @@ https://vietid-1.onrender.com/
 ```
 
 ## 📡 Danh sách API REST
+```
 | Method | Endpoint                               |                   Mô tả                       |
 |--------|----------------------------------------|-----------------------------------------------|
 | GET    | `/status`                             | Trạng thái node và blockchain |
@@ -70,36 +72,44 @@ https://vietid-1.onrender.com/
 | POST   | `/tx/send/VOTE`                       | Gửi giao dịch bỏ phiếu đề xuất `VOTE` |
 | POST   | `/tx/send/MINT`                       | Gửi giao dịch nạp token `MINT` |
 | POST   | `/tx/send/CROSS_TRANSFER`             | Gửi giao dịch liên Shard CROSS_TRANSFER |
-
+```
 ## 📥 Mẫu gửi giao dịch bằng curl
 ### Giao dịch DID_REGISTER (đăng ký định danh số)
+```
 curl -X POST https://vietid-1.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 1\"}"
 curl -X POST https://vietid-2.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 2\"}"
 curl -X POST https://vietid-3.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 3\"}"
-
+```
 ### Giao dịch MINT (phát hành token mới)
+```
 curl -X POST https://vietid-1.onrender.com/tx/send/MINT -H "Content-Type: application/json" -d "{\"recipient\": \"<Thay thế address node 1>\",\"amount\": 1000}"
-
+```
 ### Giao dịch TRANSFER (chuyển token)
+```
 curl -X POST https://vietid-1.onrender.com/tx/send/TRANSFER -H "Content-Type: application/json" -d "{\"recipient\": \"<Thay thế address node 2>\",\"amount\": 50}"
-
+```
 ### Giao dịch liên phân đoạn (Cross-shard)
+```
 curl -X POST https://vietid-1.onrender.com/tx/send/CROSS_TRANSFER -H "Content-Type: application/json" -d "{\"from_shard\": 0, \"to_shard\": 1, \"recipient\": \"<Thay thế address node 2>\", \"amount\": 100}"
-
+```
 ### Giao dịch PROPOSE (đề xuất)
+```
 curl -X POST https://vietid-1.onrender.com/tx/send/PROPOSE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"title\":\"Mint token node 3\", \"description\": \"This is mint token node 3\", \"action\": \"MINT\", \"mint_target\": \"<Address node 3>\", \"amount\": 1000}"
-
+```
 ### Giao dịch VOTE (bỏ phiếu)
+```
 Node 1 biểu quyết:
 curl -X POST https://vietid-1.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 Node 2 biểu quyết:
 curl -X POST https://vietid-2.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 Node 3 biểu quyết:
 curl -X POST https://vietid-3.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
-
+```
 ## 🔬 Demo
+```
 - Video demo: https://drive.google.com/drive/u/0/folders/1kMaqn2UkTp76dhghRWo0mKZDTN1J8URm
 - URL testnet: https://vietid-1.onrender.com/; https://vietid-2.onrender.com/; https://vietid-1.onrender.com/
+```
 
 ## 🔒 License
 MIT License - Mã nguồn mở, sử dụng tự do với điều kiện ghi nhận tác giả.
