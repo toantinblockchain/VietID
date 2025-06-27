@@ -105,25 +105,33 @@ curl -X POST https://vietid-1.onrender.com/tx/send/CROSS_TRANSFER -H "Content-Ty
 curl -X POST https://vietid-1.onrender.com/tx/send/PROPOSE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"title\":\"Mint token node 3\", \"description\": \"This is mint token node 3\", \"action\": \"MINT\", \"mint_target\": \"<Address node 3>\", \"amount\": 1000}"
 ```
 ### Giao dịch VOTE (bỏ phiếu)
-```
 Node 1 biểu quyết:
+```
 curl -X POST https://vietid-1.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 ```
-```
 Node 2 biểu quyết:
+```
 curl -X POST https://vietid-2.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 ```
-```
 Node 3 biểu quyết:
+```
 curl -X POST https://vietid-3.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 ```
 ## 🔬 Demo
-```
-- Video demo: https://drive.google.com/drive/u/0/folders/1kMaqn2UkTp76dhghRWo0mKZDTN1J8URm
-```
-```
-- URL testnet: https://vietid-1.onrender.com/; https://vietid-2.onrender.com/; https://vietid-1.onrender.com/
-```
+- Video demo:
+  ```
+  https://drive.google.com/drive/u/0/folders/1kMaqn2UkTp76dhghRWo0mKZDTN1J8URm
+  ```
+- URL testnet:
+  ```
+  https://vietid-1.onrender.com/
+  ```
+  ```
+  https://vietid-2.onrender.com/
+  ```
+  ```
+  https://vietid-1.onrender.com/
+  ```
 
 ## 🔒 License
 MIT License - Mã nguồn mở, sử dụng tự do với điều kiện ghi nhận tác giả.
