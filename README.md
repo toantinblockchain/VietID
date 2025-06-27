@@ -43,7 +43,7 @@ https://vietid-1.onrender.com/
 https://vietid-2.onrender.com/
 ```
 ```
-https://vietid-1.onrender.com/
+https://vietid-3.onrender.com/
 ```
 ## 📦 Cấu trúc thư mục
 ```
@@ -81,7 +81,11 @@ https://vietid-1.onrender.com/
 ### Giao dịch DID_REGISTER (đăng ký định danh số)
 ```
 curl -X POST https://vietid-1.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 1\"}"
+```
+```
 curl -X POST https://vietid-2.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 2\"}"
+```
+```
 curl -X POST https://vietid-3.onrender.com/tx/send/DID -H "Content-Type: application/json" -d "{\"alias\": \"Validator Node 3\"}"
 ```
 ### Giao dịch MINT (phát hành token mới)
@@ -104,14 +108,20 @@ curl -X POST https://vietid-1.onrender.com/tx/send/PROPOSE -H "Content-Type: app
 ```
 Node 1 biểu quyết:
 curl -X POST https://vietid-1.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
+```
+```
 Node 2 biểu quyết:
 curl -X POST https://vietid-2.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
+```
+```
 Node 3 biểu quyết:
 curl -X POST https://vietid-3.onrender.com/tx/send/VOTE -H "Content-Type: application/json" -d "{\"proposal_id\": \"mint_to_node3\", \"vote\": \"YES\"}"
 ```
 ## 🔬 Demo
 ```
 - Video demo: https://drive.google.com/drive/u/0/folders/1kMaqn2UkTp76dhghRWo0mKZDTN1J8URm
+```
+```
 - URL testnet: https://vietid-1.onrender.com/; https://vietid-2.onrender.com/; https://vietid-1.onrender.com/
 ```
 
