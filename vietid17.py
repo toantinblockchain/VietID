@@ -861,6 +861,82 @@ class VietIDBlockchain:
         self.state_db.balances = defaultdict(float, state_data["balances"])
         self.state_db.did_registry = state_data["did_registry"]
         print("[Blockchain] Đã tải trạng thái từ snapshot.")
+
+    def validate_transaction_fields(self, tx: Transaction) -> tuple[bool, str | None]:
+        try:
+            if not tx.data:
+                return False, "Giao dịch thiếu trường 'data'"
+            data = json.loads(tx.data)
+
+            if tx.tx_type == "TRANSFER":
+                expected_fields = {"recipient", "amount"}
+                if not isinstance(data.get("recipient"), str):
+                    return False, "'recipient' phải là chuỗi hợp lệ"
+
+            elif tx.tx_type == "CROSS_TRANSFER":
+                expected_fields = {"from_shard", "to_shard", "recipient", "amount"}
+                if not isinstance(data.get("from_shard"), int) or not isinstance(data.get("to_shard"), int):
+                    return False, "'from_shard' và 'to_shard' phải là số nguyên"
+                if not isinstance(data.get("recipient"), str):
+                    return False, "'recipient' phải là chuỗi hợp lệ"
+
+            elif tx.tx_type == "PROPOSE":
+                expected_fields = {"proposal_id", "title", "description"}
+                if not all(isinstance(data.get(k), str) for k in expected_fields):
+                    return False, "Tất cả trường trong PROPOSE phải là chuỗi"
+
+            elif tx.tx_type == "VOTE":
+                expected_fields = {"proposal_id", "vote"}
+                if not isinstance(data.get("proposal_id"), str):
+                    return False, "'proposal_id' phải là chuỗi"
+                if data.get("vote") not in {"YES", "NO"}:
+                    return False, "Giá trị 'vote' phải là 'YES' hoặc 'NO'"
+
+            elif tx.tx_type == "DID_REGISTER":
+                expected_fields = {"did", "public_key_tuple", "alias"}
+                if not isinstance(data.get("did"), str):
+                    return False, "'did' phải là chuỗi"
+                if not isinstance(data.get("public_key_tuple"), (list, tuple)) or len(data["public_key_tuple"]) != 2:
+                    return False, "'public_key_tuple' phải là danh sách gồm 2 phần tử"
+                if not isinstance(data.get("alias"), str):
+                    return False, "'alias' phải là chuỗi"
+
+            elif tx.tx_type == "MINT":
+                expected_fields = {"recipient", "amount"}
+                if not isinstance(data.get("recipient"), str):
+                    return False, "'recipient' phải là chuỗi"
+
+            elif tx.tx_type == "GOVERNANCE_PROPOSAL":
+                expected_fields = {"proposal_id", "title", "description", "action", "mint_target", "mint_amount", "quorum"}
+                if not all(isinstance(data.get(k), str) for k in ["proposal_id", "title", "description", "action"]):
+                    return False, "'proposal_id', 'title', 'description', 'action' phải là chuỗi"
+                if not isinstance(data.get("mint_target"), str):
+                    return False, "'mint_target' phải là chuỗi địa chỉ"
+                if not isinstance(data.get("mint_amount"), (int, float)) or data["mint_amount"] <= 0:
+                    return False, "'mint_amount' phải là số dương"
+                if not isinstance(data.get("quorum"), int) or data["quorum"] <= 0:
+                    return False, "'quorum' phải là số nguyên dương"
+
+            else:
+                return False, f"Loại giao dịch không được hỗ trợ: {tx.tx_type}"
+
+            actual_fields = set(data.keys())
+            missing = expected_fields - actual_fields
+            extra = actual_fields - expected_fields
+            if missing:
+                return False, f"Thiếu trường: {', '.join(missing)}"
+            if extra:
+                return False, f"Trường không hợp lệ: {', '.join(extra)}"
+
+            if "amount" in data and (not isinstance(data["amount"], (int, float)) or data["amount"] <= 0):
+                return False, "'amount' phải là số dương"
+
+        except json.JSONDecodeError:
+            return False, "Dữ liệu không phải JSON hợp lệ"
+        except Exception as e:
+            return False, f"Lỗi kiểm tra dữ liệu: {e}"
+
+        return True, None
     
     def add_transaction_to_mempool(self, transaction: 'Transaction') -> tuple[bool, str | None]:#-> bool: # 'Transaction' for forward reference
         """
@@ -929,6 +1005,10 @@ class VietIDBlockchain:
             except Exception as e:
                 print(f"[Mempool] ❌ Lỗi khi kiểm tra CROSS_TRANSFER: {e}")
                 return False
+
+        valid, reason = self.validate_transaction_fields(transaction)
+        if not valid:
+            return False, reason
 
         self.mempool[transaction.txid] = transaction
         return True, None
