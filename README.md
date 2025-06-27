@@ -38,7 +38,11 @@ pip install -r requirements.txt
 ### 3. Khởi tạo Node
 ```
 https://vietid-1.onrender.com/
+```
+```
 https://vietid-2.onrender.com/
+```
+```
 https://vietid-1.onrender.com/
 ```
 ## 📦 Cấu trúc thư mục
@@ -66,7 +70,7 @@ https://vietid-1.onrender.com/
 | GET    | `/tx/<txid>`                          | Truy vấn thông tin giao dịch cụ thể |
 | GET    | `/governance/proposals`               | Danh sách đề xuất đang được bỏ phiếu |
 | GET    | `/governance/votes/<proposal_id>`     | Chi tiết kết quả bỏ phiếu |
-| POST   | `/tx/send`                            | Gửi giao dịch chuyển tiền `TRANSFER` |
+| POST   | `/tx/send/TRANSFER`                   | Gửi giao dịch chuyển tiền `TRANSFER` |
 | POST   | `/tx/send/DID`                        | Gửi giao dịch đăng ký định danh `DID_REGISTER` |
 | POST   | `/tx/send/PROPOSE`                    | Gửi giao dịch tạo đề xuất `PROPOSE` |
 | POST   | `/tx/send/VOTE`                       | Gửi giao dịch bỏ phiếu đề xuất `VOTE` |
