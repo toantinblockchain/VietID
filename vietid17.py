@@ -488,7 +488,7 @@ class StateDB:
                         self.governance_proposals[proposal_id] = {
                             "description": description,
                             "votes": {"YES": 0, "NO": 0},
-                            "voters": [],#set(),
+                            "voters": set(),
                             "finalized": False,
                             "result": None,
                             "action": proposal_data.get("action"),
@@ -523,8 +523,7 @@ class StateDB:
                         return False
 
                     proposal["votes"][vote] += 1
-                    #proposal["voters"].add(pubkey_hex)  # ✅ Đúng với kiểu `set`
-                    proposal["voters"].append(pubkey_hex)
+                    proposal["voters"].add(pubkey_hex)  # ✅ Đúng với kiểu `set`
                     print(f"[GOV] 🗳️ Vote '{vote}' cho '{proposal_id}' từ {pubkey_hex[:10]}...")
 
                     self.try_finalize_proposal(proposal_id)
@@ -595,7 +594,7 @@ class StateDB:
             return True
 
         return False
-        
+    '''
     def create_snapshot(self, block_index: int, block_hash: str):
         # Tạo một snapshot của trạng thái hiện tại
         current_state = {
@@ -621,7 +620,44 @@ class StateDB:
         
         print(f"[StateDB] Đã tải snapshot trạng thái từ block {block_index} ({block_hash[:10]}...).")
         return True
+    '''
+    def create_snapshot(self, block_index: int, block_hash: str):
+        # Tạo một snapshot của trạng thái hiện tại
+        serializable_did_registry = {}
+        for did, data in self.did_registry.items():
+            serializable_data = data.copy()
+            if "public_key_bytes" in serializable_data and isinstance(serializable_data["public_key_bytes"], bytes):
+                serializable_data["public_key_bytes"] = serializable_data["public_key_bytes"].hex()
+            serializable_did_registry[did] = serializable_data
 
+        current_state = {
+            'did_registry': serializable_did_registry,
+            'alias_to_did': dict(self.alias_to_did),
+            'balance': dict(self.balance)
+        }
+        compressed_state = zlib.compress(json.dumps(current_state).encode('utf-8'))
+        self.state_snapshots[block_index] = (block_hash, compressed_state)
+        print(f"[StateDB] Snapshot trạng thái tạo tại block {block_index}.")
+
+    def load_snapshot(self, block_index: int) -> bool:
+        if block_index not in self.state_snapshots:
+            print(f"[StateDB] Không tìm thấy snapshot cho block {block_index}.")
+            return False
+        
+        block_hash, compressed_state = self.state_snapshots[block_index]
+        decompressed_state = json.loads(zlib.decompress(compressed_state).decode('utf-8'))
+        
+        # Convert public_key_bytes back from hex to bytes
+        for did, data in decompressed_state['did_registry'].items():
+            if "public_key_bytes" in data and isinstance(data["public_key_bytes"], str):
+                data["public_key_bytes"] = bytes.fromhex(data["public_key_bytes"])
+
+        self.did_registry = decompressed_state['did_registry']
+        self.alias_to_did = dict(decompressed_state['alias_to_did']) # Giữ nguyên là dict
+        self.balance = defaultdict(int, decompressed_state['balance'])
+        
+        print(f"[StateDB] Đã tải snapshot trạng thái từ block {block_index} ({block_hash[:10]}...).")
+        return True
     def mint_tokens(self, address: str, amount: int) -> bool:
         if amount <= 0:
             return False
