@@ -166,7 +166,7 @@ class Transaction:
         if self.tx_type == "TRANSFER" and self.amount <= 0:
             return False
         
-        if self.tx_type == "GOVERNANCE_PROPOSAL":
+        if self.tx_type == "PROPOSE":
             try:
                 proposal = json.loads(self.data)
                 return "proposal_id" in proposal and "description" in proposal
